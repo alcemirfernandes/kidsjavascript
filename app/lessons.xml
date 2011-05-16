@@ -1,0 +1,17 @@
+<lessons>
+  <lesson id="var-assignment" name="Variable Assignment" type="console">
+    <editor>
+// This is how variable assignment works
+var string = "Hello";
+var number = 42;
+    </editor>
+  </lesson>
+  <lesson id="functions" name="Functions" type="console">
+    <editor>
+// this is how a function works
+function() {
+        
+}
+    </editor>
+  </lesson>
+</lessons>

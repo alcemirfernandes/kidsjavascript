@@ -23,18 +23,6 @@ h1 {
   margin:  0px;
 }
 
-a {
-  color: white;
-  font-weight: bold;
-  text-decoration: none;
-  border-radius: 5px;
-  background-color: #9ba6b3;
-  padding: 2px 4px;
-}
-
-a:hover {
-  background-color: #bcc0c6; 
-}
 
 #main {
 }
@@ -42,32 +30,32 @@ a:hover {
 #editor { 
     margin: 0;
     position: absolute;
-    top: 0;
+    top: 30px;
     bottom: 0;
     left: 0;
     right: 0;
 }
 
 #editor-controls {
-    position: fixed;
-    bottom: 10px;
-    right: 52%;
+    top: 10px;
     text-align: right;
     z-index: 999999;
+    font-size: 12px;
+    background-color: #fafafa;
 }
 
 #editor-container {
     position: relative;
-    width: 50%;
+    width: 60%;
     min-height: 700px;
     height: 100%;
     float: left;
 }
 
 #output {
-    margin-top:0px;
+    margin-top:30px;
     float: left;
-    width: 50%;
+    width: 40%;
     min-height: 10px;
     min-height: 700px;
     height: 100%;
