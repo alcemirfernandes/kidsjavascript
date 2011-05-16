@@ -1,12 +1,43 @@
 html {
     height: 100%
 }
+
 body {
     height: 100%;
     margin: 0px;
     overflow: hidden;
 }
 
+header {
+  font-family: Helvetica, Arial, sans-serif;
+  text-align: center;
+  font-variant: small-caps;
+  padding: 0px 0px;
+  margin:  0px 0px;
+
+}
+
+h1 {
+  font-size: 18px;
+  padding: 4px;
+  margin:  0px;
+}
+
+a {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 5px;
+  background-color: #9ba6b3;
+  padding: 2px 4px;
+}
+
+a:hover {
+  background-color: #bcc0c6; 
+}
+
+#main {
+}
 
 #editor { 
     margin: 0;
@@ -17,6 +48,14 @@ body {
     right: 0;
 }
 
+#editor-controls {
+    position: fixed;
+    bottom: 10px;
+    right: 52%;
+    text-align: right;
+    z-index: 999999;
+}
+
 #editor-container {
     position: relative;
     width: 50%;
@@ -24,10 +63,13 @@ body {
     height: 100%;
     float: left;
 }
+
 #output {
+    margin-top:0px;
     float: left;
     width: 50%;
     min-height: 10px;
+    min-height: 700px;
     height: 100%;
-    background-color: #aeaeae;
+    background-color: #dedede;
 }
