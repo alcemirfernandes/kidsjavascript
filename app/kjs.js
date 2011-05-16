@@ -12,6 +12,7 @@ $(function () {
       this.editorContents = editorContents;
       this.load = function () {
           kjs.editor.setSession(new kjs.EditSession(this.editorContents));
+          kjs.editor.getSession().setMode(kjs.editorMode);
       }
     }
 
@@ -36,9 +37,10 @@ $(function () {
         kjs.editor = ace.edit("editor");
         kjs.editor.setTheme("ace/theme/twilight");
         
-        kjs.JavaScriptMode = require("ace/mode/javascript").Mode;
+        var JavaScriptMode = require("ace/mode/javascript").Mode;
+        kjs.editorMode = new JavaScriptMode();
         kjs.EditSession    = require("ace/edit_session").EditSession;
-        kjs.editor.getSession().setMode(new kjs.JavaScriptMode());
+        kjs.editor.getSession().setMode(kjs.editorMode);
 
         // extend editor object with a getter for current code body
         kjs.editor.getText = function () {
