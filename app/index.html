@@ -17,10 +17,16 @@
     <script src="lib/ace/src/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
 
     <style type="text/css" media="screen">
+    html {
+        height: 100%
+    }
     body {
+        height: 100%;
+        margin: 0px;
         overflow: hidden;
     }
     
+  
     #editor { 
         margin: 0;
         position: absolute;
@@ -29,7 +35,55 @@
         left: 0;
         right: 0;
     }
+
+    #editor-container {
+        position: relative;
+        width: 50%;
+        min-height: 700px;
+        height: 100%;
+        float: left;
+    }
+    #output {
+        float: left;
+        width: 50%;
+        min-height: 10px;
+        height: 100%;
+        background-color: #aeaeae;
+    }
   </style>
+
+  <script type="text/javascript">
+      $(function() {
+          var output = $('#output')[0];
+          window.write = function(str) {
+            output.innerHTML += str + "\n";
+          }
+ 
+          var kjs = window.kjs = {};
+          kjs.initialize = function() {
+              kjs.editor = ace.edit("editor");
+              kjs.editor.setTheme("ace/theme/twilight");
+              
+              var JavaScriptMode = require("ace/mode/javascript").Mode;
+              kjs.editor.getSession().setMode(new JavaScriptMode());
+
+              $('#run').click(function(e){
+                  e.preventDefault();
+                   
+                  kjs.code   = kjs.editor.getSelection().doc.$lines.join("\n"); 
+                  try {
+                    kjs.output = eval(kjs.code);
+                  } catch (e) {
+                    kjs.lastError = e;
+                  }
+                  console.log(output);
+              });
+              
+          };
+          
+          kjs.initialize();
+      });
+  </script>
 
 </head>
 
@@ -37,11 +91,14 @@
 
     <div id="container">
         <header>
-
+          <h1>Kids Javascript!</h1>
+          <a id="run" href="#run">Run</a>
         </header>
         <div id="main" role="main">
-            <pre id="editor">
-                // Type into this box!
+            <div id="editor-container">
+                <pre id="editor">// Type into this box!</pre>
+            </div>
+            <pre id="output">
             </pre>
         </div>
         <footer>
@@ -51,11 +108,7 @@
 
     <script>
     window.onload = function() {
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/twilight");
-        
-        var JavaScriptMode = require("ace/mode/javascript").Mode;
-        editor.getSession().setMode(new JavaScriptMode());
+
     };
     </script>
     <script>
