@@ -11,13 +11,12 @@ $(function () {
       this.name = name;
       this.editorContents = editorContents;
       this.load = function () {
-          kjs.editor.setSession(new kjs.EditSession(this.editorContents));
-          kjs.editor.getSession().setMode(kjs.editorMode);
+          kjs.editor.getSession().setValue(this.editorContents);
       }
     }
 
     kjs.runBuffer = function () {
-        kjs.code = kjs.editor.getText(); 
+        kjs.code = kjs.editor.getSession().getValue(); 
         
         $('#output').empty();
         try {
@@ -35,6 +34,7 @@ $(function () {
     };
     kjs.initializeEditor = function () {
         kjs.editor = ace.edit("editor");
+        kjs.editor.setShowPrintMargin(false);
         kjs.editor.setTheme("ace/theme/twilight");
         
         var JavaScriptMode = require("ace/mode/javascript").Mode;
@@ -42,10 +42,6 @@ $(function () {
         kjs.EditSession    = require("ace/edit_session").EditSession;
         kjs.editor.getSession().setMode(kjs.editorMode);
 
-        // extend editor object with a getter for current code body
-        kjs.editor.getText = function () {
-            return this.getSelection().doc.$lines.join("\n");    
-        }
     };
     kjs.initializeControls = function () {
         $('#run').click(function (e){
@@ -133,7 +129,7 @@ $(function () {
 
         if (doSave) {
             var saveState = {
-                'code': kjs.editor.getText(),
+                'code': kjs.editor.getSession().getValue(),
                 'lesson': ''
             };
             db.saves[saveName] = saveState;
