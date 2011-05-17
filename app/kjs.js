@@ -1,5 +1,6 @@
 $(function () {
     var output = $('#output')[0];
+
     window.write = function(str) {
       output.innerHTML += str + "\n";
     }
@@ -32,6 +33,7 @@ $(function () {
           window.write(['<span style="color:red;">Error:', kjs.lastError.message].join(' '));
         }
     };
+
     kjs.initializeEditor = function () {
         kjs.editor = ace.edit("editor");
         kjs.editor.setShowPrintMargin(false);
@@ -43,6 +45,7 @@ $(function () {
         kjs.editor.getSession().setMode(kjs.editorMode);
 
     };
+
     kjs.initializeControls = function () {
         $('#run').click(function (e){
             e.preventDefault();
@@ -79,6 +82,7 @@ $(function () {
             }
         }
     };
+
     kjs.loadLessons = function() {
         $.get('lessons.xml').
         success(function(data) {
@@ -99,42 +103,80 @@ $(function () {
             alert("Could not load lessons");
         });
     };
+
     kjs.initializeUI = function() {
       $('a.button').button();
     };
 
-    kjs.initializeDb = function () {
-        dbSchema = JSON.stringify({
-            'saves': {}
-        });
-        localStorage['kjs'] = dbSchema;
-        return localStorage['kjs'];
-    }
+    /* LOCAL DATABASE */
+
+    kjs.State = Backbone.Model.extend({
+
+        defaults: {
+            "name"  : "default",
+            "code"  : "",
+            "lesson": ""
+        }
+    });
+
+    kjs.States = Backbone.Collection.extend({
+        localStorage: new Store("saved_states"),
+
+        model: kjs.SavedState,
+
+        exists: function (name) {
+            return this.some(function (state) {
+                return state.name === name;
+            });
+        },
+
+        getByName: function (name) {
+            return this.find(function (state) {
+                return state.name === name;
+            });
+        },
+
+        comparator: function (state) {
+            return state.get("name");
+        },
+    });
+
+    kjs.SavedStates = new kjs.States();
+
     kjs.saveState = function () {
         if (!Modernizr.localstorage) {
             window.alert("Sorry, this feature is only available on newer browsers that support local storage.  We recommend Google Chrome!");
+            return;
         }
 
-        var dbString = localStorage['kjs'] || kjs.initializeDb();
-        var db = JSON.parse(dbString);
-
         var saveName = window.prompt("Save as?", "");
-        var doSave = true;
         if (saveName.length === 0) {
             window.alert("You entered a blank save name!");
-            doSave = false;
-        } else if (db.saves[saveName]) {
+            return;
+        }
+
+        if (kjs.SavedStates.exists(saveName)) {
             doSave = window.confirm("Do you really want to save over " + saveName + "?");
+            if (!doSave) {
+                return;
+            }
+            var state = kjs.SavedStates.getByName(saveName);
+            state.set({'code': kjs.editor.getSession().getValue(), 'lesson': ''});
+        } else {
+            kjs.SavedStates.create({
+                'name' : "saveName",
+                'code': kjs.editor.getSession().getValue(),
+                'lesson': ''
+            });
+    
         }
 
         if (doSave) {
-            var saveState = {
-                'code': kjs.editor.getSession().getValue(),
-                'lesson': ''
-            };
-            db.saves[saveName] = saveState;
-            localStorage['kjs'] = JSON.stringify(db);
+
         }
+    };
+
+    kjs.loadState = function (saveName) {
     };
 
     kjs.initialize = function () {
@@ -142,6 +184,7 @@ $(function () {
       kjs.initializeEditor();
       kjs.initializeControls();
       kjs.loadLessons();
+      kjs.SavedStates.fetch();
     };
     
     kjs.initialize();
