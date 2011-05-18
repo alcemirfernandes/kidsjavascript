@@ -13,7 +13,6 @@ body {
     height: 100%;
     margin: 0px;
     overflow: hidden;
-    background-color: #fff;
     background: repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAG0lEQVQIW2OMq7zlw4ADMIIkJ5WLbcYmP+gkAT01GN/P7bHhAAAAAElFTkSuQmCC) ;
     color: #444;
 }
@@ -57,7 +56,7 @@ h1 {
 #lesson-controls {
     height: 25px;
     position: absolute;
-    right: 11px;
+    right: 0px;
     top: 7px;
     text-align: center;
     font-size: 10px;
@@ -77,6 +76,7 @@ h1 {
 #editor-container, #output-container {
     margin: 0px 10px 0px 10px;
     padding: 0px 10px;
+    background-color: rgba(255, 255, 255, 0.78);
     box-shadow: 4px 4px 4px rgba(200,200,200,0.79);
 }
 #editor-container {
@@ -86,7 +86,6 @@ h1 {
     min-width 200px;
     min-height: 300px;
     height: 100%;
-    background-color: #fafafa;
     border: 1px solid silver;
     border-radius: 5px;
 }
@@ -100,7 +99,6 @@ h1 {
     min-width: 200px;
     min-height: 300px;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.78);
     border-radius: 5px;
     border: 1px solid silver;
 }
@@ -132,7 +130,7 @@ h1 {
 }
 
 #editor { 
-    margin: 0;
+    margin: 0px 0px 0px 7px;
     position: absolute;
     top: 45px;
     bottom: 0;
