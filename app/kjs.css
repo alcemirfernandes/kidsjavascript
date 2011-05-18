@@ -54,7 +54,7 @@ h1 {
 }
 
 #lesson-controls {
-    height: 25px;
+    height: 26px;
     position: absolute;
     right: 0px;
     top: 7px;
@@ -75,30 +75,30 @@ h1 {
 
 #editor-container, #output-container {
     margin: 0px 10px 0px 10px;
-    padding: 0px 10px;
+    height: 100%;
+    padding: 0px 10px 0px 10px;
     background-color: rgba(255, 255, 255, 0.78);
     box-shadow: 4px 4px 4px rgba(200,200,200,0.79);
+    min-height: 400px;
 }
+
 #editor-container {
     position: relative;
     width: 550px;
-    display: inline-block;
     min-width 200px;
-    min-height: 300px;
-    height: 100%;
+    height: 90%;
     border: 1px solid silver;
     border-radius: 5px;
+    padding: 0px 10px 20px 10px;
 }
 
 #output-container {
     font-family: monospace;
     position: absolute;;
     top: 0px;
-    left: 580px;
+    left: 578px;
     width: 370px;
     min-width: 200px;
-    min-height: 300px;
-    height: 100%;
     border-radius: 5px;
     border: 1px solid silver;
 }
@@ -120,17 +120,23 @@ h1 {
     font-family: Helvetica, Arial, Sans-serif;
     padding-top: 3px;
     color: #666;
+    font-weight: bold;
+}
+
+#file-controls {
+    position: absolute;
+    left: 10px;
+    top:  5px;
 }
 
 #run {
-  font-weight: bold;
-  position: absolute;
-  right: 10px;
-  top: 5px;
+    position: absolute;
+    right: 10px;
+    top: 5px;
 }
 
 #editor { 
-    margin: 0px 0px 0px 7px;
+    margin: 0px 0px 10px 7px;
     position: absolute;
     top: 45px;
     bottom: 0;
