@@ -111,9 +111,9 @@ $(function () {
             kjs.lessons = new kjs.Lessons();
             lessonsXML.find('lesson').each(function(i,lessonXML) {
                 var $x   = $(lessonXML);
-                var id   = $x.attr('id');
-                var name = $x.attr('name');
-                var editorContents = $($x.find('editor')[0]).text();
+                var id   = $x.attr('id').trim();
+                var name = $x.attr('name').trim();
+                var editorContents = $($x.find('editor')[0]).text().trim();
                 return kjs.lessons.add({id: id, name: name, editorContents: editorContents});
             });
 
