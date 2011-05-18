@@ -45,6 +45,9 @@ $(function () {
         var nextLessonUrl = nextLesson ? "#/lessons/" + nextLesson.get("id") :
                                          "#/lessons/" + lesson.get("id");
         $('#next-lesson').attr('href', nextLessonUrl);
+
+        // Clear the output
+        $('#output').empty();
       }
     });
 
