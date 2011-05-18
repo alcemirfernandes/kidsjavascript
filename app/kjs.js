@@ -7,32 +7,31 @@ $(function () {
 
     var kjs = window.kjs = {};
 
-    kjs.Lesson = function(id,name,editorContents) {
-      this.id   = id;
-      this.name = name;
-      this.editorContents = editorContents;
-      this.load = function () {
-          kjs.editor.getSession().setValue(this.editorContents);
-      }
-    }
+    /* INITIALIZATION */
 
-    kjs.runBuffer = function () {
-        kjs.code = kjs.editor.getSession().getValue(); 
-        
-        $('#output').empty();
-        try {
-          var context = {};
-          var codeFn = new Function(kjs.code);
-          kjs.output = codeFn.apply(context);
-
-          if (kjs.output) {
-            window.write(["Returned ", kjs.output].join(' '));
-          }
-        } catch (e) {
-          kjs.lastError = e;
-          window.write(['<span style="color:red;">Error:', kjs.lastError.message].join(' '));
-        }
+    kjs.initialize = function () {
+      kjs.initializeUI();
+      kjs.initializeEditor();
+      kjs.initializeControls();
+      kjs.loadLessons(function() {
+        kjs.SavedStates.fetch();
+         
+        kjs.workbench = new kjs.Workbench();
+        Backbone.history.start();
+      });
     };
+
+    kjs.Workbench = Backbone.Controller.extend({
+      routes: {
+          "/lessons/:lessonId": "lesson"
+      },
+      lesson: function(lessonId) {
+        var lesson = kjs.lessons.find(function(lesson) {
+            return(lesson.get('id') === lessonId);
+        });
+        lesson.load();
+      }
+    });
 
     kjs.initializeEditor = function () {
         kjs.editor = ace.edit("editor");
@@ -43,7 +42,6 @@ $(function () {
         kjs.editorMode = new JavaScriptMode();
         kjs.EditSession    = require("ace/edit_session").EditSession;
         kjs.editor.getSession().setMode(kjs.editorMode);
-
     };
 
     kjs.initializeControls = function () {
@@ -71,41 +69,61 @@ $(function () {
           }
         });
     };
-     
-    kjs.loadHashLesson = function () {
-        var lessonId = $(window.location.hash.split('/')).last()[0]; 
-        for (var i = 0; i < kjs.lessons.length; i++) {
-            var lesson = kjs.lessons[i];
-            if (lesson.id === lessonId) {
-                lesson.load();
-                break;
-            }
+
+    kjs.initializeUI = function() {
+      $('a.button').button();
+    };
+
+    kjs.runBuffer = function () {
+        kjs.code = kjs.editor.getSession().getValue(); 
+        
+        $('#output').empty();
+        try {
+          var context = {};
+          var codeFn = new Function(kjs.code);
+          kjs.output = codeFn.apply(context);
+
+          if (kjs.output) {
+            window.write(["Returned ", kjs.output].join(' '));
+          }
+        } catch (e) {
+          kjs.lastError = e;
+          window.write(['<span style="color:red;">Error:', kjs.lastError.message].join(' '));
         }
     };
 
-    kjs.loadLessons = function() {
+    /* LESSON MANAGEMENT */
+
+    kjs.Lesson = Backbone.Model.extend({
+        load: function() {
+          kjs.editor.getSession().setValue(this.get('editorContents'));
+        }
+    });
+
+    kjs.Lessons = Backbone.Collection.extend({
+        model: kjs.Lesson
+    });
+
+    kjs.loadLessons = function(callback) {
         $.get('lessons.xml').
         success(function(data) {
             var lessonsXML = $(data);
-            kjs.lessons = lessonsXML.find('lesson').map(function(i,lessonXML) {
+            kjs.lessons = new kjs.Lessons();
+            lessonsXML.find('lesson').each(function(i,lessonXML) {
                 var $x   = $(lessonXML);
                 var id   = $x.attr('id');
                 var name = $x.attr('name');
                 var editorContents = $($x.find('editor')[0]).text();
-                return new kjs.Lesson(id,name,editorContents);
+                return kjs.lessons.add({id: id, name: name, editorContents: editorContents});
             });
 
-            window.onhashchange = kjs.loadHashLesson;
-            window.location.hash = "/lessons/" + kjs.lessons[0].id
-            kjs.loadHashLesson();
+            window.location.hash = "/lessons/" + kjs.lessons.first().get('id');
+
+            if (callback) { callback() };
         }).
         error(function() {
             alert("Could not load lessons");
         });
-    };
-
-    kjs.initializeUI = function() {
-      $('a.button').button();
     };
 
     /* LOCAL DATABASE */
@@ -179,13 +197,6 @@ $(function () {
     kjs.loadState = function (saveName) {
     };
 
-    kjs.initialize = function () {
-      kjs.initializeUI();
-      kjs.initializeEditor();
-      kjs.initializeControls();
-      kjs.loadLessons();
-      kjs.SavedStates.fetch();
-    };
     
     kjs.initialize();
 });
