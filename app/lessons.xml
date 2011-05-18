@@ -1,17 +1,33 @@
 <lessons>
-  <lesson id="var-assignment" name="Variable Assignment" type="console">
+  <lesson id="hello-world" name="Hello, World!" type="console">
     <editor>
-// This is how variable assignment works
-var string = "Hello";
-var number = 42;
+/* This is about the simplest program you can write in javascript */
+write("Hello, World!");
     </editor>
   </lesson>
-  <lesson id="functions" name="Functions" type="console">
+  <lesson id="variables" name="Variables" type="console">
     <editor>
-// this is how a function works
-function() {
-        
-}
+/* Sometimes, labels, or 'Variables' as they're called make things easier */
+var place = "Paris";
+var salutation = "Bonjour";
+write(salutation + ", " + place + "!");
+  </editor>
+  </lesson>
+  <lesson id="basic-math" name="Maths" type="console">
+    <editor>
+/* Light number crunching works in a straightforward manner*/
+write(1 + 2 * 10);
+    </editor>
+  </lesson>
+  <lesson id="math-vars" name="Maths" type="console">
+    <editor>
+/* Variables work for math as well */
+var turkeyPrice = 5;
+var numTurkeys  = 10;
+var tax = 0.10;
+var subtotal = (turkeyPrice * numTurkeys)
+var total = subtotal + (subtotal * tax);
+write("The total is: $" + total);
     </editor>
   </lesson>
 </lessons>

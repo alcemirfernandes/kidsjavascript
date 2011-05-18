@@ -30,10 +30,21 @@ $(function () {
             return(lesson.get('id') === lessonId);
         });
         lesson.load();
-        $('#browse span').html(lesson.get("position") + "/" +
-                               kjs.lessons.length + " : " + 
-                               "<strong>" + lesson.get('name')
-                               + " ☰</strong>");
+         
+        $('#browse span').html((lesson.get("index") + 1) + " of " +
+                               kjs.lessons.length + " - " + 
+                               lesson.get('name'));
+
+        var prevLesson    = kjs.lessons.at(lesson.get("index") - 1);
+        var prevLessonUrl = prevLesson ? "#/lessons/" + prevLesson.get("id") :
+                                         "#/lessons/" + lesson.get("id");
+        $('#prev-lesson').attr('href', prevLessonUrl);
+
+         
+        var nextLesson    = kjs.lessons.at(lesson.get("index") + 1);
+        var nextLessonUrl = nextLesson ? "#/lessons/" + nextLesson.get("id") :
+                                         "#/lessons/" + lesson.get("id");
+        $('#next-lesson').attr('href', nextLessonUrl);
       }
     });
 
@@ -54,6 +65,7 @@ $(function () {
             kjs.runBuffer();
         });
 
+        // Catch shift + enter to exec console
         var $editor = $('#editor');
         var shifted = false;
         $editor.keydown(function (e) {
@@ -105,7 +117,7 @@ $(function () {
     });
 
     kjs.Lessons = Backbone.Collection.extend({
-        model: kjs.Lesson
+        model: kjs.Lesson,
     });
 
     kjs.loadLessons = function(callback) {
@@ -118,7 +130,7 @@ $(function () {
                 var id   = $x.attr('id').trim();
                 var name = $x.attr('name').trim();
                 var editorContents = $($x.find('editor')[0]).text().trim();
-                return kjs.lessons.add({id: id, position: (i + 1), name: name,
+                return kjs.lessons.add({id: id, index: i, name: name,
                                         editorContents: editorContents});
             });
 

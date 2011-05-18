@@ -46,12 +46,6 @@ h1 {
 #main {
 }
 
-.component-title {
-  font-family: Helvetica, Arial, Sans-serif;
-  font-size: 18px;
-  font-weight: bold;
-}
-
 #lesson-controls {
     position: absolute;
     right: 11px;
@@ -62,6 +56,12 @@ h1 {
     padding: 4px;
     border-radius: 5px;
     border: 1px solid silver;
+}
+
+#browse span {
+    width: 300px;
+    font-weight: bold;
+    font-size: 12px;
 }
 
 #editor-container, #output-container {
@@ -112,9 +112,12 @@ h1 {
 #editor-header .title, #output-header .title {
     font-size: 16px;
     font-family: Helvetica, Arial, Sans-serif;
+    padding-top: 3px;
+    color: #666;
 }
 
 #run {
+  font-weight: bold;
   position: absolute;
   right: 10px;
   top: 5px;
