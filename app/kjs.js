@@ -30,6 +30,10 @@ $(function () {
             return(lesson.get('id') === lessonId);
         });
         lesson.load();
+        $('#browse span').html(lesson.get("position") + "/" +
+                               kjs.lessons.length + " : " + 
+                               "<strong>" + lesson.get('name')
+                               + " ☰</strong>");
       }
     });
 
@@ -114,7 +118,8 @@ $(function () {
                 var id   = $x.attr('id').trim();
                 var name = $x.attr('name').trim();
                 var editorContents = $($x.find('editor')[0]).text().trim();
-                return kjs.lessons.add({id: id, name: name, editorContents: editorContents});
+                return kjs.lessons.add({id: id, position: (i + 1), name: name,
+                                        editorContents: editorContents});
             });
 
             window.location.hash = "/lessons/" + kjs.lessons.first().get('id');

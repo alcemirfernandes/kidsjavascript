@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Inconsolata';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Inconsolata'), url('inconsolata.woff');
+}
+
 html {
     height: 100%
 }
@@ -6,58 +13,120 @@ body {
     height: 100%;
     margin: 0px;
     overflow: hidden;
+    background-color: #fff;
+    background: repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAG0lEQVQIW2OMq7zlw4ADMIIkJ5WLbcYmP+gkAT01GN/P7bHhAAAAAElFTkSuQmCC) ;
+    color: #444;
+}
+
+pre, pre * {
+    font-weight: bold;
 }
 
 header {
   font-family: Helvetica, Arial, sans-serif;
   text-align: center;
   font-variant: small-caps;
-  padding: 0px 0px;
+  padding: 7px 0px;
   margin:  0px 0px;
-
+  height:  40px;
 }
 
 h1 {
   font-size: 18px;
   padding: 4px;
   margin:  0px;
+  background-color: #fafafa;
+  border: 1px solid #aaa;
+  width: 200px;
+  display: inline-block;
+  border-radius: 5px;
 }
 
 
 #main {
 }
 
+.component-title {
+  font-family: Helvetica, Arial, Sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#lesson-controls {
+    position: absolute;
+    right: 11px;
+    top: 7px;
+    text-align: center;
+    font-size: 10px;
+    background-color: #fff;
+    padding: 4px;
+    border-radius: 5px;
+    border: 1px solid silver;
+}
+
+#editor-container, #output-container {
+    margin: 0px 0px 0px 10px;
+    padding: 0px 10px;
+}
+#editor-container {
+    float: left;
+    position: relative;
+    width: 50%;
+    display: inline-block;
+    min-width 200px;
+    min-height: 300px;
+    height: 100%;
+    background-color: #fafafa;
+    border: 1px solid silver;
+    border-radius: 5px;
+}
+
+#output-container {
+    font-family: monospace;
+    float: right;
+    position: relative;
+    display: inline-block;
+    width: 42%;
+    min-height: 300px;
+    height: 100%;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid silver;
+}
+
+
+
+#editor-header, #output-header {
+    top: 0px;
+    margin: 0px;
+    padding: 5px;
+    height: 25px;
+    text-align: center;
+    z-index: 999999;
+    font-size: 10px;
+    font-weight: bold;
+    background-color: #fff;
+    border-bottom: 1px solid silver;
+}
+
+#editor-header .title, #output-header .title {
+    font-size: 16px;
+    font-family: Helvetica, Arial, Sans-serif;
+}
+
+#run {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+}
+
 #editor { 
     margin: 0;
     position: absolute;
-    top: 30px;
+    top: 45px;
     bottom: 0;
     left: 0;
     right: 0;
 }
 
-#editor-controls {
-    top: 10px;
-    text-align: right;
-    z-index: 999999;
-    font-size: 12px;
-    background-color: #fafafa;
-}
 
-#editor-container {
-    position: relative;
-    width: 60%;
-    min-height: 700px;
-    height: 100%;
-    float: left;
-}
-
-#output {
-    margin-top:30px;
-    float: left;
-    width: 40%;
-    min-height: 10px;
-    min-height: 700px;
-    height: 100%;
-    background-color: #dedede;
-}

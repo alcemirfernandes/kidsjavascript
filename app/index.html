@@ -32,19 +32,29 @@
 
     <div id="container">
         <header>
-          <h1>Kids Javascript</h1>
+            <h1>Kids Javascript</h1>
+            <div id="lesson-controls">
+                  <a id="prev-lesson" href="#" class="button">◀</a>
+                  <a id="browse"      href="#" class="button">Lessons ☰</a>
+                  <a id="next-lesson" href="#" class="button">▶</a>
+            </div>
         </header>
         <div id="main" role="main">
-            
             <div id="editor-container">
-                <div id="editor-controls">
-                  <a id="browse" href="#run" class="button">Browse ☰</a>
-                  <a id="next-lesson" href="#run" class="button">Next ↠</a>
-                  <a id="run" href="#run" class="button">Run ⇒</a>
+                <div id="editor-header">
+                  <div class="title">Editor</div>
+                  <a id="run" href="#run" class="button">Run ☇</a>
                 </div>
                 <pre id="editor"></pre>
             </div>
-            <pre id="output"></pre>
+            <div id="output-container">
+                <div id="output-header">
+                  <div class="title">Output</div>
+                </div>
+
+              <pre id="output"></pre>
+            </div>
+             
             <div style="clear: both"></div>
         </div>
     </div> <!-- eo #container -->
