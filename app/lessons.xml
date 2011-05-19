@@ -2,7 +2,7 @@
   <lesson id="hello-world" name="Hello, World!" type="console">
     <editor>
 /* This is about the simplest program you can write in javascript */
-write("Hello, World!");
+console.write("Hello, World!");
     </editor>
   </lesson>
   <lesson id="variables" name="Variables" type="console">
@@ -10,13 +10,13 @@ write("Hello, World!");
 /* Sometimes, labels, or 'Variables' as they're called make things easier */
 var place = "Paris";
 var salutation = "Bonjour";
-write(salutation + ", " + place + "!");
+console.write(salutation + ", " + place + "!");
   </editor>
   </lesson>
   <lesson id="basic-math" name="Maths" type="console">
     <editor>
 /* Light number crunching works in a straightforward manner*/
-write(1 + 2 * 10);
+console.write(1 + 2 * 10);
     </editor>
   </lesson>
   <lesson id="math-vars" name="Maths" type="console">
@@ -25,9 +25,9 @@ write(1 + 2 * 10);
 var turkeyPrice = 5;
 var numTurkeys  = 10;
 var tax = 0.10;
-var subtotal = (turkeyPrice * numTurkeys)
+var subtotal = (turkeyPrice * numTurkeys);
 var total = subtotal + (subtotal * tax);
-write("The total is: $" + total);
+console.write("The total is: $" + total);
     </editor>
   </lesson>
 </lessons>
