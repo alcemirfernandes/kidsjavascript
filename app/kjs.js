@@ -1,18 +1,12 @@
 $(function () {
-    var output = $('#output')[0];
-
-    window.write = function(str) {
-      output.innerHTML += str + "\n";
-    }
 
     var kjs = window.kjs = {};
 
     /* INITIALIZATION */
 
     kjs.initialize = function () {
-      kjs.initializeUI();
-      kjs.initializeEditor();
-      kjs.initializeControls();
+      kjs.app = new kjs.AppView();
+
       kjs.loadLessons(function() {
         kjs.SavedStates.fetch();
          
@@ -21,102 +15,109 @@ $(function () {
       });
     };
 
+    kjs.AppView = Backbone.View.extend({
+        
+        el: $('#container'),
+
+        events: {
+            'click #run':       'runBuffer', // run button
+            'keypress #editor': 'runBuffer'  // shift + enter to run console
+        },
+
+        initialize: function () {
+            _.bindAll(this, 'runBuffer', 'render', 'loadLesson');
+
+            this.console = {
+                output: $('#output')[0],
+                
+                write:  function (str) {
+                    // NOTE: we only use the less readable array.join method since we don't know how this
+                    // function will be called and whether performance will matter (possibly 10^20 times, who knows!)
+                    output.innerHTML = [output.innerHTML, str, "\n"].join("");
+                }
+            };
+
+            // init jquery buttons
+            this.$('a.button').button();
+
+            // init ace javascript editor
+            this.editor = ace.edit("editor");
+            this.editor.setShowPrintMargin(false);
+            this.editor.setTheme("ace/theme/twilight");
+            
+            var JavaScriptMode = require("ace/mode/javascript").Mode;
+            this.editorMode = new JavaScriptMode();
+            this.editor.getSession().setMode(this.editorMode);
+        },
+
+        runBuffer: function (e) {
+            if ( (!e.shiftKey || !(e.keyCode === 13)) && !(e.type === 'click') ) {
+                return;
+            }
+            e.preventDefault();
+            this.code = this.editor.getSession().getValue(); 
+            
+            $('#output').empty();
+            try {
+                var context = {
+                };
+                //var args = [ {}, this.console ];
+                var codeFn = new Function("window", "document", "$", "jQuery", "console", this.code);
+                this.returned = codeFn.call(context, {}, {}, {}, {}, this.console);
+
+                if (this.returned) {
+                    this.console.write(["Returned ", this.returned].join(' '));
+                }
+            } catch (e) {
+                this.lastError = e;
+                this.console.write(['<span style="color:red;">Error:', this.lastError.message].join(' '));
+            }
+        },
+
+        render: function() {
+            this.editor.getSession().setValue(this.lesson.get("editorContents"));
+             this.$('#browse span').html((this.lesson.get("index") + 1) + " of " +
+                               kjs.lessons.length + " - " + 
+                               this.lesson.get('name'));
+
+            var prevLesson    = kjs.lessons.at(this.lesson.get("index") - 1);
+            var prevLessonUrl = prevLesson ? "#/lessons/" + prevLesson.get("id") :
+                                            "#/lessons/" + this.lesson.get("id");
+            this.$('#prev-lesson').attr('href', prevLessonUrl);
+
+            
+            var nextLesson    = kjs.lessons.at(this.lesson.get("index") + 1);
+            var nextLessonUrl = nextLesson ? "#/lessons/" + nextLesson.get("id") :
+                                            "#/lessons/" + this.lesson.get("id");
+            this.$('#next-lesson').attr('href', nextLessonUrl);
+
+            // Clear the output
+            this.$('#output').empty();
+        },
+
+        loadLesson: function(lesson) {
+            this.lesson = lesson;            
+            this.render();
+        }
+    });
+
     kjs.Workbench = Backbone.Controller.extend({
       routes: {
           "/lessons/:lessonId": "lesson"
       },
+
       lesson: function(lessonId) {
         var lesson = kjs.lessons.find(function(lesson) {
             return(lesson.get('id') === lessonId);
         });
-        lesson.load();
-         
-        $('#browse span').html((lesson.get("index") + 1) + " of " +
-                               kjs.lessons.length + " - " + 
-                               lesson.get('name'));
 
-        var prevLesson    = kjs.lessons.at(lesson.get("index") - 1);
-        var prevLessonUrl = prevLesson ? "#/lessons/" + prevLesson.get("id") :
-                                         "#/lessons/" + lesson.get("id");
-        $('#prev-lesson').attr('href', prevLessonUrl);
-
-         
-        var nextLesson    = kjs.lessons.at(lesson.get("index") + 1);
-        var nextLessonUrl = nextLesson ? "#/lessons/" + nextLesson.get("id") :
-                                         "#/lessons/" + lesson.get("id");
-        $('#next-lesson').attr('href', nextLessonUrl);
-
-        // Clear the output
-        $('#output').empty();
+        kjs.app.loadLesson(lesson);
       }
     });
-
-    kjs.initializeEditor = function () {
-        kjs.editor = ace.edit("editor");
-        kjs.editor.setShowPrintMargin(false);
-        kjs.editor.setTheme("ace/theme/twilight");
-        
-        var JavaScriptMode = require("ace/mode/javascript").Mode;
-        kjs.editorMode = new JavaScriptMode();
-        kjs.EditSession    = require("ace/edit_session").EditSession;
-        kjs.editor.getSession().setMode(kjs.editorMode);
-    };
-
-    kjs.initializeControls = function () {
-        $('#run').click(function (e){
-            e.preventDefault();
-            kjs.runBuffer();
-        });
-
-        // Catch shift + enter to exec console
-        var $editor = $('#editor');
-        var shifted = false;
-        $editor.keydown(function (e) {
-            if (e.keyCode == 16) {
-                shifted = true;
-            }
-        });
-        $editor.keyup(function (e) {
-            if (e.keyCode == 16) {
-                shifted = false;
-            }
-        });
-        $editor.keypress(function (e) {
-          if (e.keyCode === 13 && shifted) {
-              e.preventDefault();
-              kjs.runBuffer();
-          }
-        });
-    };
-
-    kjs.initializeUI = function() {
-      $('a.button').button();
-    };
-
-    kjs.runBuffer = function () {
-        kjs.code = kjs.editor.getSession().getValue(); 
-        
-        $('#output').empty();
-        try {
-          var context = {};
-          var codeFn = new Function(kjs.code);
-          kjs.output = codeFn.apply(context);
-
-          if (kjs.output) {
-            window.write(["Returned ", kjs.output].join(' '));
-          }
-        } catch (e) {
-          kjs.lastError = e;
-          window.write(['<span style="color:red;">Error:', kjs.lastError.message].join(' '));
-        }
-    };
 
     /* LESSON MANAGEMENT */
 
     kjs.Lesson = Backbone.Model.extend({
-        load: function() {
-          kjs.editor.getSession().setValue(this.get('editorContents'));
-        }
     });
 
     kjs.Lessons = Backbone.Collection.extend({
@@ -199,18 +200,17 @@ $(function () {
                 return;
             }
             var state = kjs.SavedStates.getByName(saveName);
-            state.set({'code': kjs.editor.getSession().getValue(), 'lesson': ''});
+            state.set({
+                'code': kjs.editor.getSession().getValue(),
+                'lesson': ''
+            });
+            state.save();
         } else {
             kjs.SavedStates.create({
                 'name' : "saveName",
                 'code': kjs.editor.getSession().getValue(),
                 'lesson': ''
-            });
-    
-        }
-
-        if (doSave) {
-
+            }); 
         }
     };
 
