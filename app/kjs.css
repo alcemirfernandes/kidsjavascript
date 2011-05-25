@@ -93,7 +93,7 @@ h1 {
 }
 
 #output-container {
-    font-family: monospace;
+    font-family: Inconsolata, monospace;
     position: absolute;;
     top: 0px;
     left: 578px;
