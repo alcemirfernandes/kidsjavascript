@@ -26,8 +26,12 @@ $(function () {
             "click #save-state": "saveState",  // save editor/lesson state
         },
 
+        templates: {
+            "open-state-dialog": _.template($('#open-state-dialog').html())
+        },
+
         initialize: function () {
-            _.bindAll(this, 'runBuffer', 'render', 'loadLesson', 'saveState', 'loadState', 'showStateSelector');
+            _.bindAll(this, 'runBuffer', 'render', 'loadLesson', 'saveState', 'loadState', 'openState');
 
             this.console = {
                 output: $('#output')[0],
@@ -78,7 +82,7 @@ $(function () {
 
         render: function() {
             this.editor.getSession().setValue(this.lesson.get("editorContents"));
-             this.$('#browse span').html((this.lesson.get("index") + 1) + " of " +
+            this.$('#browse span').html((this.lesson.get("index") + 1) + " of " +
                                kjs.lessons.length + " - " + 
                                this.lesson.get('name'));
 
@@ -135,24 +139,37 @@ $(function () {
             }
         },
 
-        loadState: function (saveName) {
+        loadState: function (state) {
+            this.editor.getSession().setValue(state.get("code"));
         },
 
         openState: function (e) {
             e.preventDefault();
-            this.$('#state-dropdown')
-                .autocomplete({
-                    "source": kjs.SavedStates.pluck("id")
-                })
-                .change( function (e) {
-                    debugger;
-                })
+            var states = kjs.SavedStates.pluck("id");
+            var dialogHTML = this.templates['open-state-dialog']({
+                'states': states
+            });
+            $(dialogHTML).dialog({
+                'autoOpen': true,
+                'modal':    true,
+                'buttons': {
+                    'Ok': function () {
+                        var stateId = $(this).val();
+                        window.location.hash = "/states/" + stateId;
+                        $(this).dialog("close");
+                    },
+                    'Cancel': function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
         },
     });
 
     kjs.Workbench = Backbone.Controller.extend({
       routes: {
-          "/lessons/:lessonId": "lesson"
+          "/lessons/:lessonId": "lesson",
+          "/states/:stateId":   "state"
       },
 
       lesson: function(lessonId) {
@@ -161,6 +178,12 @@ $(function () {
         });
 
         kjs.app.loadLesson(lesson);
+      },
+
+      state: function(stateId) {
+        var state = kjs.SavedStates.getById(stateId);
+        this.lesson(state.get("lesson"));
+        kjs.app.loadState(state);
       }
     });
 
@@ -214,13 +237,13 @@ $(function () {
 
         exists: function (id) {
             return this.some(function (state) {
-                return state.id === id;
+                return state.get("id") === id;
             });
         },
 
         getById: function (id) {
             return this.find(function (state) {
-                return state.id === id;
+                return state.get("id") === id;
             });
         },
 

@@ -20,13 +20,13 @@
     <script src="lib/underscore.min.js"></script>
     <script src="lib/backbone.min.js"></script>
     <script src="lib/backbone-localstorage.min.js"></script>
-    <script src="lib/ace/src/ace.js"                type="text/javascript" charset="utf-8"></script>
-    <script src="lib/ace/src/theme-twilight.js"     type="text/javascript" charset="utf-8"></script>
-    <script src="lib/ace/src/mode-javascript.js"    type="text/javascript" charset="utf-8"></script>
+    <script src="lib/ace/src/ace.js"                 type="text/javascript" charset="utf-8"></script>
+    <script src="lib/ace/src/theme-twilight.js"      type="text/javascript" charset="utf-8"></script>
+    <script src="lib/ace/src/mode-javascript.js"     type="text/javascript" charset="utf-8"></script>
     <script src="lib/jquery-ui-1.8.12.custom.min.js" type="text/javascript" charset="utf-8"></script>
-    <script src="lib/ace/src/theme-twilight.js" type="text/javascript" charset="utf-8"></script>
-    <script src="lib/ace/src/mode-javascript.js" type="text/javascript" charset="utf-8"></script>
-    <script src="kjs.js" type="text/javascript" charset="utf-8"></script>
+    <script src="lib/ace/src/theme-twilight.js"      type="text/javascript" charset="utf-8"></script>
+    <script src="lib/ace/src/mode-javascript.js"     type="text/javascript" charset="utf-8"></script>
+    <script src="kjs.js"                             type="text/javascript" charset="utf-8"></script>
 </head>
 
 <body>
@@ -64,6 +64,14 @@
             <div style="clear: both"></div>
         </div>
     </div> <!-- eo #container -->
+
+    <script type="text/template" id="open-state-dialog">
+        <select class="state-selector">
+            <% _.each(states, function (state) { %>
+                <option value="<%= state %>"><%= state %></option>
+            <% }); %>
+        </select>
+    </script>
 </body>
 </html>
 
