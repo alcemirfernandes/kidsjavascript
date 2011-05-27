@@ -19,7 +19,7 @@ console.write(salutation + ", " + place + "!");
 console.write(1 + 2 * 10);
     </editor>
   </lesson>
-  <lesson id="math-vars" name="Maths" type="console">
+  <lesson id="math-vars" name="Math with Vars" type="console">
     <editor>
 /* Variables work for math as well */
 var turkeyPrice = 5;
@@ -28,6 +28,11 @@ var tax = 0.10;
 var subtotal = (turkeyPrice * numTurkeys);
 var total = subtotal + (subtotal * tax);
 console.write("The total is: $" + total);
+    </editor>
+  </lesson>
+  <lesson id="graphics-intro" name="Drawing #1" type="gfx">
+    <editor>
+      
     </editor>
   </lesson>
 </lessons>
