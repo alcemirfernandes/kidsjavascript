@@ -129,6 +129,22 @@ h1 {
     top:  5px;
 }
 
+ul.dropdown {
+    float:left;
+    text-align: left;
+    display: inline;
+    list-style-type: none;
+    margin: 0;
+}
+
+ul.dropdown li {
+    margin: 0;
+}
+
+ul.dropdown .fold {
+    display: none;
+}
+
 #run {
     position: absolute;
     right: 10px;

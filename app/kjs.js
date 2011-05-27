@@ -20,12 +20,14 @@ $(function () {
         el: $('#container'),
 
         events: {
-            'click #run':       'runBuffer', // run button
-            'keypress #editor': 'runBuffer'  // shift + enter to run console
+            "click #run":        "runBuffer",  // run button
+            "keypress #editor":  "runBuffer",  // shift + enter to run console
+            "click #open-state": "openState",  // open and load a saved editor/lesson state
+            "click #save-state": "saveState",  // save editor/lesson state
         },
 
         initialize: function () {
-            _.bindAll(this, 'runBuffer', 'render', 'loadLesson');
+            _.bindAll(this, 'runBuffer', 'render', 'loadLesson', 'saveState', 'loadState', 'showStateSelector');
 
             this.console = {
                 output: $('#output')[0],
@@ -95,10 +97,57 @@ $(function () {
             this.$('#output').empty();
         },
 
-        loadLesson: function(lesson) {
+        loadLesson: function (lesson) {
             this.lesson = lesson;            
             this.render();
-        }
+        },
+        
+        saveState: function () {
+            if (!Modernizr.localstorage) {
+                window.alert("Sorry, this feature is only available on newer browsers that support local storage.  We recommend Google Chrome!");
+                return;
+            }
+
+            var saveName = window.prompt("Save as?", "");
+            if (saveName.length === 0) {
+                window.alert("You entered a blank save name!");
+                return;
+            }
+
+            if (kjs.SavedStates.exists(saveName)) {
+                doSave = window.confirm("Do you really want to save over " + saveName + "?");
+                if (!doSave) {
+                    return;
+                }
+                var state = kjs.SavedStates.getById(saveName);
+                state.set({
+                    "id":     saveName,
+                    "code":   this.editor.getSession().getValue(),
+                    "lesson": this.lesson.get("id")
+                });
+                state.save();
+            } else {
+                kjs.SavedStates.create({
+                    "id" :    saveName,
+                    "code":   this.editor.getSession().getValue(),
+                    "lesson": this.lesson.get("id")
+                }); 
+            }
+        },
+
+        loadState: function (saveName) {
+        },
+
+        openState: function (e) {
+            e.preventDefault();
+            this.$('#state-dropdown')
+                .autocomplete({
+                    "source": kjs.SavedStates.pluck("id")
+                })
+                .change( function (e) {
+                    debugger;
+                })
+        },
     });
 
     kjs.Workbench = Backbone.Controller.extend({
@@ -152,7 +201,7 @@ $(function () {
     kjs.State = Backbone.Model.extend({
 
         defaults: {
-            "name"  : "default",
+            "id"  : "default",
             "code"  : "",
             "lesson": ""
         }
@@ -163,60 +212,27 @@ $(function () {
 
         model: kjs.SavedState,
 
-        exists: function (name) {
+        exists: function (id) {
             return this.some(function (state) {
-                return state.name === name;
+                return state.id === id;
             });
         },
 
-        getByName: function (name) {
+        getById: function (id) {
             return this.find(function (state) {
-                return state.name === name;
+                return state.id === id;
             });
         },
 
         comparator: function (state) {
-            return state.get("name");
+            return state.get("id");
         },
     });
 
     kjs.SavedStates = new kjs.States();
 
-    kjs.saveState = function () {
-        if (!Modernizr.localstorage) {
-            window.alert("Sorry, this feature is only available on newer browsers that support local storage.  We recommend Google Chrome!");
-            return;
-        }
+    kjs.SavedStateSelector = Backbone.View.extend({
+    });
 
-        var saveName = window.prompt("Save as?", "");
-        if (saveName.length === 0) {
-            window.alert("You entered a blank save name!");
-            return;
-        }
-
-        if (kjs.SavedStates.exists(saveName)) {
-            doSave = window.confirm("Do you really want to save over " + saveName + "?");
-            if (!doSave) {
-                return;
-            }
-            var state = kjs.SavedStates.getByName(saveName);
-            state.set({
-                'code': kjs.editor.getSession().getValue(),
-                'lesson': ''
-            });
-            state.save();
-        } else {
-            kjs.SavedStates.create({
-                'name' : "saveName",
-                'code': kjs.editor.getSession().getValue(),
-                'lesson': ''
-            }); 
-        }
-    };
-
-    kjs.loadState = function (saveName) {
-    };
-
-    
     kjs.initialize();
 });
