@@ -57,11 +57,7 @@
                 <pre id="editor"></pre>
             </div>
             <div id="output-container">
-                <div id="output-header">
-                  <div class="title">Output</div>
-                </div>
-
-              <pre id="output"></pre>
+                <!-- Gets filled with output-tmpl -->
             </div>
              
             <div style="clear: both"></div>
@@ -85,6 +81,13 @@
                 </li>
             <% }); %>
         </ol>
+    </script>
+    <script type="text/template" id="output-tmpl">
+        <div id="output-header">
+          <div class="title">Output</div>
+        </div>
+
+        <pre id="output"></pre>
     </script>
 </body>
 </html>

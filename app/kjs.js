@@ -31,7 +31,8 @@ $(function () {
 
         templates: {
             "open-state-dialog":    _.template($('#open-state-dialog').html()),
-            "lesson-browse-dialog": _.template($('#lesson-browse-dialog-tmpl').html())
+            "lesson-browse-dialog": _.template($('#lesson-browse-dialog-tmpl').html()),
+            "output"              : _.template($('#output-tmpl').html())
         },
 
         initialize: function () {
@@ -101,8 +102,7 @@ $(function () {
                                              '#' + kjs.workbench.urls.lesson(this.lesson.get("id"));
             this.$('#next-lesson').attr('href', nextLessonUrl);
 
-            // Clear the output
-            this.$('#output').empty();
+            this.$('#output-container').html(this.templates['output']());
         },
 
         loadLesson: function (lesson) {
