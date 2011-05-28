@@ -1,5 +1,5 @@
+// vim: ts=4:sw=4
 $(function () {
-
     var kjs = window.kjs = {};
 
     /* INITIALIZATION */
@@ -7,10 +7,10 @@ $(function () {
     kjs.initialize = function () {
       kjs.app = new kjs.AppView();
 
+      kjs.workbench = new kjs.Workbench();
       kjs.loadLessons(function() {
         kjs.SavedStates.fetch();
          
-        kjs.workbench = new kjs.Workbench();
         Backbone.history.start();
       });
     };
@@ -24,10 +24,14 @@ $(function () {
             "keypress #editor":  "runBuffer",  // shift + enter to run console
             "click #open-state": "openState",  // open and load a saved editor/lesson state
             "click #save-state": "saveState",  // save editor/lesson state
+            "click #browse":     "openBrowse", // Open lesson browsing
+            "mouseout #lesson-browse-dialog": "closeBrowse",
+            "mouseover #lesson-browse-dialog": "ensureBrowse"
         },
 
         templates: {
-            "open-state-dialog": _.template($('#open-state-dialog').html())
+            "open-state-dialog":    _.template($('#open-state-dialog').html()),
+            "lesson-browse-dialog": _.template($('#lesson-browse-dialog-tmpl').html())
         },
 
         initialize: function () {
@@ -164,12 +168,58 @@ $(function () {
                 }
             });
         },
+
+        openBrowse: function(e) {
+            this.toggleBrowse(e,'open');
+        },
+        closeBrowse: function(e) {
+            var self = this;
+            this.closeBrowseTimeout = setTimeout(function() {
+                self.toggleBrowse(e,'close');
+            }, 500);
+        },
+        ensureBrowse: function(e) {
+            if (this.closeBrowseTimeout) {
+                clearTimeout(this.closeBrowseTimeout);
+            }
+        },
+        toggleBrowse: function(e,state) {
+            if (e) {
+                e.preventDefault();
+            }
+
+            var self = this;
+            var browseCont = $('#lesson-browse-dialog');
+             
+            if (state === 'close') {
+                self.browseOpen = false;
+                browseCont.hide();
+            } else {
+                self.browseOpen = true;
+                 
+                var browseHTML = self.templates['lesson-browse-dialog']({
+                    'lessons': kjs.lessons
+                });
+                 
+                browseCont.html(browseHTML);
+                browseCont.find('a').click(function(e) {
+                  self.toggleBrowse(null, 'close');
+                });
+                browseCont.show();
+            }
+        }
     });
 
-    kjs.Workbench = Backbone.Controller.extend({
+    kjs.Workbench = Backbone.Router.extend({
       routes: {
           "/lessons/:lessonId": "lesson",
           "/states/:stateId":   "state"
+      },
+
+      urls: {
+        lesson: function(lessonId) {
+            return "/lessons/" + lessonId;
+        }
       },
 
       lesson: function(lessonId) {
@@ -210,7 +260,7 @@ $(function () {
                                         editorContents: editorContents});
             });
 
-            window.location.hash = "/lessons/" + kjs.lessons.first().get('id');
+            window.location.hash = kjs.workbench.urls.lesson(kjs.lessons.first().get('id'));
 
             if (callback) { callback() };
         }).

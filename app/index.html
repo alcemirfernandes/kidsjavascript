@@ -18,7 +18,7 @@
     <script src="lib/json2.js"></script>
     <script src="lib/raphael.js"></script>
     <script src="lib/underscore.min.js"></script>
-    <script src="lib/backbone.min.js"></script>
+    <script src="lib/backbone.js"></script>
     <script src="lib/backbone-localstorage.min.js"></script>
     <script src="lib/ace/src/ace.js"                 type="text/javascript" charset="utf-8"></script>
     <script src="lib/ace/src/theme-twilight.js"      type="text/javascript" charset="utf-8"></script>
@@ -38,6 +38,9 @@
                   <a id="prev-lesson" href="#" class="button">◀</a>
                   <a id="browse"      href="#" class="button">Lessons ☰</a>
                   <a id="next-lesson" href="#" class="button">▶</a>
+  
+                  <!-- lesson browse drawer -->
+                  <div id="lesson-browse-dialog" style="display: none"></div>
             </div>
         </header>
         <div id="main" role="main">
@@ -72,6 +75,16 @@
             <% }); %>
         </select>
     </script>
+    <script type="text/template" id="lesson-browse-dialog-tmpl">
+        <ol class="lesson-browser">
+            <% lessons.each(function(lesson, i) { %>
+                <li>
+                    <a href="#<%= kjs.workbench.urls.lesson(lesson.get('id')) %>">
+                        <%= lesson.get('name') %>
+                    </a>
+                </li>
+            <% }); %>
+        </ol>
+    </script>
 </body>
 </html>
-

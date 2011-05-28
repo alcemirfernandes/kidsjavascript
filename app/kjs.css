@@ -14,6 +14,16 @@ pre, pre * {
     font-weight: bold;
 }
 
+a {
+    color: #444;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    color: #666;
+}
+
 header {
   font-family: Helvetica, Arial, sans-serif;
   text-align: left;
@@ -50,6 +60,7 @@ h1 {
 #lesson-controls {
     height: 26px;
     position: absolute;
+    z-index:  9999;
     right: 0px;
     top: 7px;
     text-align: center;
@@ -59,6 +70,27 @@ h1 {
     border-radius: 5px;
     border: 1px solid silver;
     box-shadow: 4px 4px 4px rgba(200,200,200,0.79);
+}
+
+#lesson-browse-dialog {
+    font-variant: normal;
+    background-color: rgba(255,255,255,0.9);
+    text-align:       left;
+    font-size:        12px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    box-shadow: 4px 4px 4px rgba(200,200,200,0.79);
+}
+
+#lesson-browse-dialog ol {
+    margin: 5px 10px 10px 10px;
+    padding: 5px 20px;
+}
+
+#lesson-browse-dialog li {
+    padding: 2px;
+    border-bottom: 1px solid-silver;
+    margin-bottom: 1px;
 }
 
 #browse span {
@@ -88,7 +120,8 @@ h1 {
 
 #output-container {
     font-family: Inconsolata, monospace;
-    position: absolute;;
+    position: absolute;
+    z-index: 0;
     top: 0px;
     left: 578px;
     width: 370px;
