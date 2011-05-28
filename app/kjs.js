@@ -91,14 +91,14 @@ $(function () {
                                this.lesson.get('name'));
 
             var prevLesson    = kjs.lessons.at(this.lesson.get("index") - 1);
-            var prevLessonUrl = prevLesson ? "#/lessons/" + prevLesson.get("id") :
-                                            "#/lessons/" + this.lesson.get("id");
+            var prevLessonUrl = prevLesson ? '#' + kjs.workbench.urls.lesson(prevLesson.get("id")) :
+                                             '#' + kjs.workbench.urls.lesson(this.lesson.get("id"));
             this.$('#prev-lesson').attr('href', prevLessonUrl);
 
             
             var nextLesson    = kjs.lessons.at(this.lesson.get("index") + 1);
-            var nextLessonUrl = nextLesson ? "#/lessons/" + nextLesson.get("id") :
-                                            "#/lessons/" + this.lesson.get("id");
+            var nextLessonUrl = nextLesson ? '#' + kjs.workbench.urls.lesson(nextLesson.get("id")) :
+                                             '#' + kjs.workbench.urls.lesson(this.lesson.get("id"));
             this.$('#next-lesson').attr('href', nextLessonUrl);
 
             // Clear the output
