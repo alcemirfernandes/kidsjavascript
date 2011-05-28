@@ -130,20 +130,14 @@ h1 {
     top:  5px;
 }
 
-ul.dropdown {
-    float:left;
-    text-align: left;
-    display: inline;
-    list-style-type: none;
-    margin: 0;
-}
+ul.selector { list-style-type: none; margin: 0; padding: 0; width: 60%; border: 2px inset; min-height: 100px;  }
+ul.selector .ui-selecting { background: #92C1FF; }
+ul.selector .ui-selected { background: #A2D1FF; color: white; }
+/*ul.selector .ui-selectee { border: 1px solid blue; background-color: cyan; }*/
+ul.selector .ui-selectee:nth-child(even) { background: #B1E4F2; }
+ul.selector .ui-selectee { padding: 4px; line-height: 12px; }
 
-ul.dropdown li {
-    margin: 0;
-}
-
-ul.dropdown .fold {
-    display: none;
+#open-state-dialog-wrapper {
 }
 
 #run {

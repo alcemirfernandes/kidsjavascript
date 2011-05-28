@@ -64,13 +64,15 @@
             <div style="clear: both"></div>
         </div>
     </div> <!-- eo #container -->
-
     <script type="text/template" id="open-state-dialog">
-        <select class="state-selector">
+    <div id="open-state-dialog-wrapper">
+        <label for="state-selector">Saved Files</label>
+        <ul id="state-selector" class="selector">
             <% _.each(states, function (state) { %>
-                <option value="<%= state %>"><%= state %></option>
+                <li data-id="<%= state.get('id') %>"><%= state.get('name') %></li>
             <% }); %>
-        </select>
+        </ul>
+    </div>
     </script>
 </body>
 </html>

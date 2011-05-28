@@ -118,21 +118,21 @@ $(function () {
                 return;
             }
 
-            if (kjs.SavedStates.exists(saveName)) {
+            if (kjs.SavedStates.nameExists(saveName)) {
                 doSave = window.confirm("Do you really want to save over " + saveName + "?");
                 if (!doSave) {
                     return;
                 }
-                var state = kjs.SavedStates.getById(saveName);
+                var state = kjs.SavedStates.getByName(saveName);
                 state.set({
-                    "id":     saveName,
+                    "name":   saveName,
                     "code":   this.editor.getSession().getValue(),
                     "lesson": this.lesson.get("id")
                 });
                 state.save();
             } else {
                 kjs.SavedStates.create({
-                    "id" :    saveName,
+                    "name" :  saveName,
                     "code":   this.editor.getSession().getValue(),
                     "lesson": this.lesson.get("id")
                 }); 
@@ -145,46 +145,48 @@ $(function () {
 
         openState: function (e) {
             e.preventDefault();
-            var states = kjs.SavedStates.pluck("id");
+            var states = kjs.SavedStates.models;
             var dialogHTML = this.templates['open-state-dialog']({
                 'states': states
             });
+
             $(dialogHTML).dialog({
                 'autoOpen': true,
                 'modal':    true,
                 'buttons': {
                     'Ok': function () {
                         var stateId = $(this).val();
-                        window.location.hash = "/states/" + stateId;
+                        var state = kjs.SavedStates.getById(stateId);
+                        window.location.hash = "/lessons/" + state.get("lesson") + "/" + stateId;
                         $(this).dialog("close");
                     },
                     'Cancel': function () {
                         $(this).dialog("close");
                     }
                 }
-            });
+            })
+            .find('.selector').selectable();
         },
     });
 
     kjs.Workbench = Backbone.Controller.extend({
       routes: {
-          "/lessons/:lessonId": "lesson",
-          "/states/:stateId":   "state"
+          "/lessons/:lessonId":           "lesson",
+          "/lessons/:lessonId/:stateId": "lesson",
       },
 
-      lesson: function(lessonId) {
+      lesson: function(lessonId, stateId) {
         var lesson = kjs.lessons.find(function(lesson) {
             return(lesson.get('id') === lessonId);
         });
 
         kjs.app.loadLesson(lesson);
-      },
 
-      state: function(stateId) {
-        var state = kjs.SavedStates.getById(stateId);
-        this.lesson(state.get("lesson"));
-        kjs.app.loadState(state);
-      }
+        if (stateId) {
+            var state = kjs.SavedStates.getById(stateId);
+            kjs.app.loadState(state);
+        }
+      },
     });
 
     /* LESSON MANAGEMENT */
@@ -223,8 +225,12 @@ $(function () {
 
     kjs.State = Backbone.Model.extend({
 
+        initialize: function () {
+            this.id = this.cid;
+        },
+
         defaults: {
-            "id"  : "default",
+            "name"  : "",
             "code"  : "",
             "lesson": ""
         }
@@ -244,6 +250,18 @@ $(function () {
         getById: function (id) {
             return this.find(function (state) {
                 return state.get("id") === id;
+            });
+        },
+
+        nameExists: function (name) {
+            return this.some(function (state) {
+                return state.get("name") === name;
+            });
+        },
+
+        getByName: function (name) {
+            return this.find(function (state) {
+                return state.get("name") === name;
             });
         },
 
