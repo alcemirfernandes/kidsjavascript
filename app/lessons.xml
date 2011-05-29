@@ -35,8 +35,17 @@ console.write("The total is: $" + total);
 /* We can draw amazing graphics */
 console.write("Graphics are fun");
 paper.rect(10,10,200,200);
-
-      
+    </editor>
+  </lesson>
+  <lesson id="graphics-with-loops" name="Drawing #2" type="raphael">
+    <editor>
+<![CDATA[
+/* We can draw amazing graphics */
+console.write("Graphics are fun");
+for (var i = 0; i < 200; i += 10) {
+  paper.rect(i,i,200,200);
+}
+]]>
     </editor>
   </lesson>
 </lessons>
