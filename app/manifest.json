@@ -1,0 +1,20 @@
+{
+  "name": "Kids Javascript",
+  "description": "A Javascript learning environment for kids",
+  "version": "1",
+  "app": {
+    "urls": [
+      "http://kidsjavascript.github.com/kidsjavascript/app/",
+    ],
+    "launch": {
+      "web_url": "http://kidsjavascript.github.com/kidsjavascript/app/"
+    }
+  },
+  "icons": {
+    "128": "icon_128.png"
+  },
+  "permissions": [
+    "unlimitedStorage",
+    "notifications"
+  ]
+}
