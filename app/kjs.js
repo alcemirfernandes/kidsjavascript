@@ -14,46 +14,7 @@ $(function () {
         Backbone.history.start();
       });
     };
-
-    kjs.Pen = function(paper) {
-        this.paper = paper;
-        this.x     = 0;
-        this.y     = 0;
-        this.penState = 'down';
-        this.penUp = function() {
-            this.penState = 'up';
-            return this;
-        },
-        this.penDown = function() {
-            this.penState = 'down';
-            return this;
-        },
-        this.move  = function(x,y) {
-            var path = "M" + this.x + ' ' + this.y;
-            this.x = x;
-            this.y = y;
-            if (this.penState === 'down') {
-                path += ("L" + x + ' ' + y);
-            } else {
-                path += ("M" + x + ' ' + y);
-            }
-            paper.path(path);
-            return this;
-        },
-        this.left = function(dist) {
-            return this.move(this.x - dist,this.y);
-        }
-        this.right = function(dist) {
-            return this.move(this.x + dist,this.y);
-        },
-        this.down = function(dist) {
-            return this.move(this.x, this.y + dist);
-        },
-        this.up   = function(dist) {
-            return this.move(this.x, this.y - dist);
-        }
-    }
-
+     
     kjs.AppView = Backbone.View.extend({
         
         el: $('#container'),
@@ -364,6 +325,45 @@ $(function () {
 
     kjs.SavedStateSelector = Backbone.View.extend({
     });
+
+    kjs.Pen = function(paper) {
+        this.paper = paper;
+        this.x     = 0;
+        this.y     = 0;
+        this.penState = 'down';
+        this.penUp = function() {
+            this.penState = 'up';
+            return this;
+        },
+        this.penDown = function() {
+            this.penState = 'down';
+            return this;
+        },
+        this.move  = function(x,y) {
+            var path = "M" + this.x + ' ' + this.y;
+            this.x = x;
+            this.y = y;
+            if (this.penState === 'down') {
+                path += ("L" + x + ' ' + y);
+            } else {
+                path += ("M" + x + ' ' + y);
+            }
+            paper.path(path);
+            return this;
+        },
+        this.left = function(dist) {
+            return this.move(this.x - dist,this.y);
+        }
+        this.right = function(dist) {
+            return this.move(this.x + dist,this.y);
+        },
+        this.down = function(dist) {
+            return this.move(this.x, this.y + dist);
+        },
+        this.up   = function(dist) {
+            return this.move(this.x, this.y - dist);
+        }
+    }
 
     kjs.initialize();
 });
