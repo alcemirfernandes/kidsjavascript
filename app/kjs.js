@@ -1,5 +1,5 @@
+// vim: ts=4:sw=4
 $(function () {
-
     var kjs = window.kjs = {};
 
     /* INITIALIZATION */
@@ -7,10 +7,10 @@ $(function () {
     kjs.initialize = function () {
       kjs.app = new kjs.AppView();
 
+      kjs.workbench = new kjs.Workbench();
       kjs.loadLessons(function() {
         kjs.SavedStates.fetch();
          
-        kjs.workbench = new kjs.Workbench();
         Backbone.history.start();
       });
     };
@@ -24,10 +24,15 @@ $(function () {
             "keypress #editor":  "runBuffer",  // shift + enter to run console
             "click #open-state": "openState",  // open and load a saved editor/lesson state
             "click #save-state": "saveState",  // save editor/lesson state
+            "click #browse":     "openBrowse", // Open lesson browsing
+            "mouseout #lesson-browse-dialog": "closeBrowse",
+            "mouseover #lesson-browse-dialog": "ensureBrowse"
         },
 
         templates: {
-            "open-state-dialog": _.template($('#open-state-dialog').html())
+            "open-state-dialog":    _.template($('#open-state-dialog').html()),
+            "lesson-browse-dialog": _.template($('#lesson-browse-dialog-tmpl').html()),
+            "output"              : _.template($('#output-tmpl').html())
         },
 
         initialize: function () {
@@ -87,18 +92,17 @@ $(function () {
                                this.lesson.get('name'));
 
             var prevLesson    = kjs.lessons.at(this.lesson.get("index") - 1);
-            var prevLessonUrl = prevLesson ? "#/lessons/" + prevLesson.get("id") :
-                                            "#/lessons/" + this.lesson.get("id");
+            var prevLessonUrl = prevLesson ? '#' + kjs.workbench.urls.lesson(prevLesson.get("id")) :
+                                             '#' + kjs.workbench.urls.lesson(this.lesson.get("id"));
             this.$('#prev-lesson').attr('href', prevLessonUrl);
 
             
             var nextLesson    = kjs.lessons.at(this.lesson.get("index") + 1);
-            var nextLessonUrl = nextLesson ? "#/lessons/" + nextLesson.get("id") :
-                                            "#/lessons/" + this.lesson.get("id");
+            var nextLessonUrl = nextLesson ? '#' + kjs.workbench.urls.lesson(nextLesson.get("id")) :
+                                             '#' + kjs.workbench.urls.lesson(this.lesson.get("id"));
             this.$('#next-lesson').attr('href', nextLessonUrl);
 
-            // Clear the output
-            this.$('#output').empty();
+            this.$('#output-container').html(this.templates['output']());
         },
 
         loadLesson: function (lesson) {
@@ -149,7 +153,7 @@ $(function () {
             var dialogHTML = this.templates['open-state-dialog']({
                 'states': states
             });
-
+            var selectedState = null;
             $(dialogHTML).dialog({
                 'autoOpen': true,
                 'modal':    true,
@@ -165,14 +169,69 @@ $(function () {
                     }
                 }
             })
-            .find('.selector').selectable();
+            .find('.selector').selectable({
+                'selected': function (event, ui) {
+                        selectedState = ui.selected.dataset.id;
+                        $(dialogHTML).find('.ui-selected').each(function () {
+                            if (!this.dataset.id === selectedState) {
+                                $(this).removeClass('ui-selected');
+                            }
+                        });
+                }
+            });
         },
+
+        openBrowse: function(e) {
+            this.toggleBrowse(e,'open');
+        },
+        closeBrowse: function(e) {
+            var self = this;
+            this.closeBrowseTimeout = setTimeout(function() {
+                self.toggleBrowse(e,'close');
+            }, 500);
+        },
+        ensureBrowse: function(e) {
+            if (this.closeBrowseTimeout) {
+                clearTimeout(this.closeBrowseTimeout);
+            }
+        },
+        toggleBrowse: function(e,state) {
+            if (e) {
+                e.preventDefault();
+            }
+
+            var self = this;
+            var browseCont = $('#lesson-browse-dialog');
+             
+            if (state === 'close') {
+                self.browseOpen = false;
+                browseCont.hide();
+            } else {
+                self.browseOpen = true;
+                 
+                var browseHTML = self.templates['lesson-browse-dialog']({
+                    'lessons': kjs.lessons
+                });
+                 
+                browseCont.html(browseHTML);
+                browseCont.find('a').click(function(e) {
+                  self.toggleBrowse(null, 'close');
+                });
+                browseCont.show();
+            }
+        }
     });
 
-    kjs.Workbench = Backbone.Controller.extend({
+    kjs.Workbench = Backbone.Router.extend({
       routes: {
           "/lessons/:lessonId":           "lesson",
           "/lessons/:lessonId/:stateId": "lesson",
+      },
+
+      urls: {
+        lesson: function(lessonId) {
+            return "/lessons/" + lessonId;
+        }
       },
 
       lesson: function(lessonId, stateId) {
@@ -212,7 +271,7 @@ $(function () {
                                         editorContents: editorContents});
             });
 
-            window.location.hash = "/lessons/" + kjs.lessons.first().get('id');
+            window.location.hash = kjs.workbench.urls.lesson(kjs.lessons.first().get('id'));
 
             if (callback) { callback() };
         }).
