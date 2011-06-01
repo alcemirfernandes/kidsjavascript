@@ -30,9 +30,22 @@ var total = subtotal + (subtotal * tax);
 console.write("The total is: $" + total);
     </editor>
   </lesson>
-  <lesson id="graphics-intro" name="Drawing #1" type="gfx">
+  <lesson id="graphics-intro" name="Drawing #1" type="raphael">
     <editor>
-      
+/* We can draw amazing graphics */
+console.write("Graphics are fun");
+paper.rect(10,10,200,200);
+    </editor>
+  </lesson>
+  <lesson id="graphics-with-loops" name="Drawing #2" type="raphael">
+    <editor>
+<![CDATA[
+/* We can draw amazing graphics */
+console.write("Graphics are fun");
+for (var i = 0; i < 200; i += 10) {
+  paper.rect(i,i,200,200);
+}
+]]>
     </editor>
   </lesson>
 </lessons>

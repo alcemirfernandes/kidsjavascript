@@ -14,7 +14,7 @@ $(function () {
         Backbone.history.start();
       });
     };
-
+     
     kjs.AppView = Backbone.View.extend({
         
         el: $('#container'),
@@ -32,18 +32,18 @@ $(function () {
         templates: {
             "open-state-dialog":    _.template($('#open-state-dialog').html()),
             "lesson-browse-dialog": _.template($('#lesson-browse-dialog-tmpl').html()),
-            "output"              : _.template($('#output-tmpl').html())
+            "console-output"              : _.template($('#console-output-tmpl').html()),
+            "raphael-output"              : _.template($('#raphael-output-tmpl').html())
         },
 
         initialize: function () {
             _.bindAll(this, 'runBuffer', 'render', 'loadLesson', 'saveState', 'loadState', 'openState');
 
             this.console = {
-                output: $('#output')[0],
-                
                 write:  function (str) {
                     // NOTE: we only use the less readable array.join method since we don't know how this
                     // function will be called and whether performance will matter (possibly 10^20 times, who knows!)
+                    var output = $('#console')[0];
                     output.innerHTML = [output.innerHTML, str, "\n"].join("");
                 }
             };
@@ -68,13 +68,19 @@ $(function () {
             e.preventDefault();
             this.code = this.editor.getSession().getValue(); 
             
-            $('#output').empty();
+            $('#console').empty();
+  
+            if (this.lesson.get('type') === 'raphael') {
+                this.paper.clear();
+                this.pen = new kjs.Pen(this.paper);
+            }
+
             try {
                 var context = {
                 };
                 //var args = [ {}, this.console ];
-                var codeFn = new Function("window", "document", "$", "jQuery", "console", this.code);
-                this.returned = codeFn.call(context, {}, {}, {}, {}, this.console);
+                var codeFn = new Function("window", "document", "$", "jQuery", "console", "paper", "pen", this.code);
+                this.returned = codeFn.call(context, {}, {}, {}, {}, this.console, this.paper, this.pen);
 
                 if (this.returned) {
                     this.console.write(["Returned ", this.returned].join(' '));
@@ -102,7 +108,19 @@ $(function () {
                                              '#' + kjs.workbench.urls.lesson(this.lesson.get("id"));
             this.$('#next-lesson').attr('href', nextLessonUrl);
 
-            this.$('#output-container').html(this.templates['output']());
+            var ltype = this.lesson.get('type');
+            var blankOutput = null;
+            if (ltype === 'raphael') {
+                blankOutput = this.templates['raphael-output']();
+            } else {
+                blankOutput = this.templates['console-output']();
+            }
+            this.$('#output-container').html(blankOutput);
+
+            if (ltype === 'raphael') {
+                this.paper = Raphael('paper',370, 300);
+                this.pen   = new kjs.Pen(this.paper);
+            }
         },
 
         loadLesson: function (lesson) {
@@ -266,8 +284,9 @@ $(function () {
                 var $x   = $(lessonXML);
                 var id   = $x.attr('id').trim();
                 var name = $x.attr('name').trim();
+                var type = $x.attr('type').trim();
                 var editorContents = $($x.find('editor')[0]).text().trim();
-                return kjs.lessons.add({id: id, index: i, name: name,
+                return kjs.lessons.add({id: id, index: i, name: name, type: type,
                                         editorContents: editorContents});
             });
 
@@ -333,6 +352,45 @@ $(function () {
 
     kjs.SavedStateSelector = Backbone.View.extend({
     });
+
+    kjs.Pen = function(paper) {
+        this.paper = paper;
+        this.x     = 0;
+        this.y     = 0;
+        this.penState = 'down';
+        this.penUp = function() {
+            this.penState = 'up';
+            return this;
+        },
+        this.penDown = function() {
+            this.penState = 'down';
+            return this;
+        },
+        this.move  = function(x,y) {
+            var path = "M" + this.x + ' ' + this.y;
+            this.x = x;
+            this.y = y;
+            if (this.penState === 'down') {
+                path += ("L" + x + ' ' + y);
+            } else {
+                path += ("M" + x + ' ' + y);
+            }
+            paper.path(path);
+            return this;
+        },
+        this.left = function(dist) {
+            return this.move(this.x - dist,this.y);
+        }
+        this.right = function(dist) {
+            return this.move(this.x + dist,this.y);
+        },
+        this.down = function(dist) {
+            return this.move(this.x, this.y + dist);
+        },
+        this.up   = function(dist) {
+            return this.move(this.x, this.y - dist);
+        }
+    }
 
     kjs.initialize();
 });

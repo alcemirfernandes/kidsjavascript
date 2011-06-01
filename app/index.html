@@ -84,12 +84,24 @@
             <% }); %>
         </ol>
     </script>
-    <script type="text/template" id="output-tmpl">
+    <script type="text/template" id="console-output-tmpl">
+      <div class="console">
         <div id="output-header">
           <div class="title">Output</div>
         </div>
 
-        <pre id="output"></pre>
+        <pre id="console"></pre>
+      </div>
+    </script>
+    <script type="text/template" id="raphael-output-tmpl">
+      <div class="raphael">
+        <div id="output-header">
+          <div class="title">Output</div>
+        </div>
+
+        <div id="paper"></<div>
+        <pre id="console"></pre>
+      </div>
     </script>
 </body>
 </html>
