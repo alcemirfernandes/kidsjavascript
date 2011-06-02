@@ -30,14 +30,14 @@ $(function () {
         },
 
         templates: {
-            "open-state-dialog":    _.template($('#open-state-dialog').html()),
-            "lesson-browse-dialog": _.template($('#lesson-browse-dialog-tmpl').html()),
+            "open-state-dialog"           : _.template($('#open-state-dialog').html()),
+            "lesson-browse-dialog"        : _.template($('#lesson-browse-dialog-tmpl').html()),
             "console-output"              : _.template($('#console-output-tmpl').html()),
             "raphael-output"              : _.template($('#raphael-output-tmpl').html())
         },
 
         initialize: function () {
-            _.bindAll(this, 'runBuffer', 'render', 'loadLesson', 'saveState', 'loadState', 'openState');
+            _.bindAll(this, 'runBuffer', 'render', 'loadLesson', 'saveState', 'loadState', 'openState', 'autoSave');
 
             this.console = {
                 write:  function (str) {
@@ -59,6 +59,17 @@ $(function () {
             var JavaScriptMode = require("ace/mode/javascript").Mode;
             this.editorMode = new JavaScriptMode();
             this.editor.getSession().setMode(this.editorMode);
+
+            // init notification settings
+            $.extend($.gritter.options, {
+                position: 'bottom-right', // defaults to 'top-right' but can be 'bottom-left', 'bottom-right', 'top-left', 'top-right' (added in 1.7.1)
+                fade_in_speed: 'medium', // how fast notifications fade in (string or int)
+                fade_out_speed: 'medium', // how fast the notices fade out
+                time: 3000 // hang on the screen for...
+            });                
+
+            // init auto save
+            window.setInterval(this.autoSave, 5*60*1000);
         },
 
         runBuffer: function (e) {
@@ -127,6 +138,32 @@ $(function () {
             this.lesson = lesson;            
             this.render();
         },
+
+        displayNotification: function (text) {
+           $.gritter.add({
+            title: (new Date).toLocaleTimeString(),
+            text: text
+           });
+        },
+
+        autoSave:  function () {
+            var autosave = kjs.SavedStates.getByName("_autosave");
+            if (!autosave) {
+                kjs.SavedStates.create({
+                    "name": "_autosave",
+                    "code": this.editor.getSession().getValue(),
+                    "lesson": this.lesson.get("id")
+                });
+            } else {
+                autosave.set({
+                    "code": this.editor.getSession().getValue(),
+                    "lesson": this.lesson.get("id")
+                });
+                autosave.save();
+            }
+
+            this.displayNotification("Your session was auto-saved");
+        },
         
         saveState: function () {
             if (!Modernizr.localstorage) {
@@ -159,6 +196,8 @@ $(function () {
                     "lesson": this.lesson.get("id")
                 }); 
             }
+
+            this.displayNotification("Successfully saved");
         },
 
         loadState: function (state) {
@@ -176,11 +215,12 @@ $(function () {
                 'autoOpen': true,
                 'modal':    true,
                 'buttons': {
-                    'Ok': function () {
-                        var stateId = $(this).val();
-                        var state = kjs.SavedStates.getById(stateId);
-                        window.location.hash = "/lessons/" + state.get("lesson") + "/" + stateId;
-                        $(this).dialog("close");
+                    'Open': function () {
+                        if (selectedState) {
+                            var state = kjs.SavedStates.getById(selectedState);
+                            window.location.hash = "/lessons/" + state.get("lesson") + "/" + selectedState;
+                            $(this).dialog("close");
+                        }
                     },
                     'Cancel': function () {
                         $(this).dialog("close");
@@ -189,12 +229,7 @@ $(function () {
             })
             .find('.selector').selectable({
                 'selected': function (event, ui) {
-                        selectedState = ui.selected.dataset.id;
-                        $(dialogHTML).find('.ui-selected').each(function () {
-                            if (!this.dataset.id === selectedState) {
-                                $(this).removeClass('ui-selected');
-                            }
-                        });
+                    selectedState = ui.selected.dataset.id;
                 }
             });
         },
@@ -202,17 +237,20 @@ $(function () {
         openBrowse: function(e) {
             this.toggleBrowse(e,'open');
         },
+        
         closeBrowse: function(e) {
             var self = this;
             this.closeBrowseTimeout = setTimeout(function() {
                 self.toggleBrowse(e,'close');
             }, 500);
         },
+        
         ensureBrowse: function(e) {
             if (this.closeBrowseTimeout) {
                 clearTimeout(this.closeBrowseTimeout);
             }
         },
+        
         toggleBrowse: function(e,state) {
             if (e) {
                 e.preventDefault();
@@ -243,7 +281,7 @@ $(function () {
     kjs.Workbench = Backbone.Router.extend({
       routes: {
           "/lessons/:lessonId":           "lesson",
-          "/lessons/:lessonId/:stateId": "lesson",
+          "/lessons/:lessonId/:stateId":  "lesson",
       },
 
       urls: {

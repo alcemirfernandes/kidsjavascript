@@ -99,7 +99,7 @@ h1 {
     font-size: 12px;
 }
 
-#editor-container, #output-container {
+#editor-container, #output-container{
     margin: 0px 10px 0px 10px;
     height: 100%;
     padding: 0px 10px 0px 10px;
@@ -143,6 +143,16 @@ h1 {
     border-bottom: 1px solid silver;
 }
 
+#editor-footer {
+    bottom: 0px;
+}
+#editor-message-container {
+    font-style: italic;
+    color: #ddd;
+    min-height: 24px;
+    line-height: 12px;
+}
+
 .raphael #console {
     border-top: 1px solid silver;
 }
@@ -161,15 +171,15 @@ h1 {
     top:  5px;
 }
 
+#state-popup {
+    display: none;
+}
+
 ul.selector { list-style-type: none; margin: 0; padding: 0; width: 60%; border: 2px inset; min-height: 150px; min-width: 100px;  }
 ul.selector .ui-selecting { background: #92C1FF; }
 ul.selector .ui-selected { background: #A2D1FF; color: white; }
-/*ul.selector .ui-selectee { border: 1px solid blue; background-color: cyan; }*/
 ul.selector .ui-selectee:nth-child(even):not(.ui-selected) { background: #eee; }
 ul.selector .ui-selectee { padding: 4px; line-height: 12px; }
-
-#open-state-dialog-wrapper {
-}
 
 #run {
     position: absolute;

@@ -11,6 +11,7 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <link type="text/css" href="lib/jquery-ui.css" rel="Stylesheet" />  
+    <link type="text/css" href="lib/jquery.gritter.css" rel="Stylesheet" />
     <link rel="stylesheet" href="kjs.css">
 
     <script src="lib/jquery-1.6.1.min.js"></script>
@@ -24,6 +25,7 @@
     <script src="lib/ace/src/theme-twilight.js"      type="text/javascript" charset="utf-8"></script>
     <script src="lib/ace/src/mode-javascript.js"     type="text/javascript" charset="utf-8"></script>
     <script src="lib/jquery-ui-1.8.12.custom.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="lib/jquery.gritter.min.js"          type="text/javascript" charset="utf-8"></script>
     <script src="lib/ace/src/theme-twilight.js"      type="text/javascript" charset="utf-8"></script>
     <script src="lib/ace/src/mode-javascript.js"     type="text/javascript" charset="utf-8"></script>
     <script src="kjs.js"                             type="text/javascript" charset="utf-8"></script>
@@ -55,6 +57,10 @@
                   <a id="run" href="#run" class="button">Run ☇</a>
                 </div>
                 <pre id="editor"></pre>
+                
+                <div id="editor-footer">
+                    <div id="editor-message-container"></div>
+                </div>
             </div>
             <div id="output-container">
                 <!-- Gets filled with output-tmpl -->
@@ -68,7 +74,9 @@
         <label for="state-selector">Saved Files</label>
         <ul id="state-selector" class="selector">
             <% _.each(states, function (state) { %>
-                <li data-id="<%= state.get('id') %>"><%= state.get('name') %></li>
+                <li data-id="<%= state.get('id') %>">
+                    <%= state.get('name') %>
+                </li>
             <% }); %>
         </ul>
     </div>
